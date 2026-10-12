@@ -46,6 +46,14 @@ xcrun actool --compile "$APP/Contents/Resources" --platform macosx --target-devi
 cp "$ICON" "$APP/Contents/Resources/AppIcon.icns"   # over actool's plainer fallback: ours has simplified 16 and 32 px
 cp Resources/Acknowledgements.txt "$APP/Contents/Resources/Acknowledgements.txt"
 
+# SwiftPM keeps localized strings in its resource bundle. Embed that bundle for the app's own lookup, then expose the
+# language folders at the app-bundle level so AppKit, SwiftUI and macOS permission prompts resolve the same strings.
+LOCALIZATION_BUNDLE="$BIN_DIR/DigUp_DigUpLocalization.bundle"
+ditto "$LOCALIZATION_BUNDLE" "$APP/Contents/Resources/$(basename "$LOCALIZATION_BUNDLE")"
+for language in en zh-Hans; do
+  ditto "Sources/DigUpLocalization/Resources/$language.lproj" "$APP/Contents/Resources/$language.lproj"
+done
+
 # Sparkle (in-app updates): the framework in Frameworks/, where the app's runpath looks. Its XPC services are for
 # sandboxed apps and its headers for building against it: left out.
 FW="$APP/Contents/Frameworks/Sparkle.framework"

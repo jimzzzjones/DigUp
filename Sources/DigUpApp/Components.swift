@@ -87,7 +87,7 @@ struct MomentBar: View {
             }
         }
         .frame(height: 4)
-        .accessibilityLabel("At \(ResultRow.clock(start)) of \(ResultRow.clock(duration))")
+        .accessibilityLabel(L("At %@ of %@", ResultRow.clock(start), ResultRow.clock(duration)))
     }
 }
 
@@ -115,7 +115,7 @@ struct KindCounts: View {
     var description: String {
         FileKind.allCases.compactMap { kind in
             counts[kind].flatMap { $0 > 0 ? kind.counted($0) : nil }
-        }.joined(separator: ", ")
+        }.joined(separator: L(", "))
     }
 }
 
@@ -132,16 +132,16 @@ extension FileKind {
     /// "1 screenshot", "25 PDFs", "6 audio files"
     func counted(_ count: Int) -> String {
         let one = count == 1
-        let noun = switch self {
-        case .screenshot: one ? "screenshot" : "screenshots"
-        case .image: one ? "image" : "images"
-        case .pdf: one ? "PDF" : "PDFs"
-        case .doc: one ? "document" : "documents"
-        case .audio: one ? "audio file" : "audio files"
-        case .video: one ? "video" : "videos"
-        case .code: one ? "code file" : "code files"
+        let key = switch self {
+        case .screenshot: one ? "%@ screenshot" : "%@ screenshots"
+        case .image: one ? "%@ image" : "%@ images"
+        case .pdf: one ? "%@ PDF" : "%@ PDFs"
+        case .doc: one ? "%@ document" : "%@ documents"
+        case .audio: one ? "%@ audio file" : "%@ audio files"
+        case .video: one ? "%@ video" : "%@ videos"
+        case .code: one ? "%@ code file" : "%@ code files"
         }
-        return "\(count.formatted()) \(noun)"
+        return L(key, count.formatted())
     }
 }
 
@@ -213,8 +213,9 @@ struct ShortcutRecorder: View {
             }
             .buttonStyle(.plain)
             .background(KeyCatcher(active: recording, onKey: handle, onResign: { setRecording(false) }))
-            .accessibilityLabel(recording ? "Recording a new shortcut" : "Shortcut \(combo?.display ?? "none"), click to change")
-            Text(problem ?? (recording ? "Esc cancels" : "Click to change"))
+            .accessibilityLabel(recording ? L("Recording a new shortcut")
+                : L("Shortcut %@, click to change", combo?.display ?? L("none")))
+            Text(problem ?? (recording ? L("Esc cancels") : L("Click to change")))
                 .font(.system(size: 11))
                 .foregroundStyle(problem == nil ? AnyShapeStyle(.tertiary) : AnyShapeStyle(Color.red))
                 .multilineTextAlignment(.center)
@@ -234,7 +235,7 @@ struct ShortcutRecorder: View {
                                                                                                .numericPad])
         if event.keyCode == 53, flags.isEmpty { return setRecording(false) }   // Esc
         guard let combo = KeyCombo(keyCode: event.keyCode, flags: flags) else {
-            problem = "Use ⌘, ⌥ or ⌃ with a key"
+            problem = L("Use ⌘, ⌥ or ⌃ with a key")
             return
         }
         if let why = apply(combo) {

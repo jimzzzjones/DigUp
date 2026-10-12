@@ -54,7 +54,7 @@ final class AddFoldersController {
                                   add: { [weak self] in self?.add() })
         let sheet = NSWindow(contentViewController: NSHostingController(rootView: view))
         sheet.styleMask = [.titled]
-        sheet.title = code ? "Code Folders" : "Add Folders"
+        sheet.title = code ? L("Code Folders") : L("Add Folders")
         self.sheet = sheet
         choices.startEstimates()
         log("add folders: \(choices.rows.count) to choose from")
@@ -144,15 +144,16 @@ private struct AddFoldersView: View {
     }
 
     private var summary: String {
-        guard choices.changesSomething else { return "Check the folders to add" }
-        guard choices.estimatesDone else { return "Looking at the folders…" }
-        let time = choices.totalSeconds < 1 ? "under a second" : "about \(roughDuration(choices.totalSeconds))"
+        guard choices.changesSomething else { return L("Check the folders to add") }
+        guard choices.estimatesDone else { return L("Looking at the folders…") }
+        let time = choices.totalSeconds < 1 ? L("under a second")
+            : L("about %@", roughDuration(choices.totalSeconds))
         if choices.code {
-            return "Adds \(time) of indexing and \(roughBytes(choices.totalBytes))"
+            return L("Adds %@ of indexing and %@", time, roughBytes(choices.totalBytes))
         }
         let later = choices.totalLaterSeconds
-        return "Adds \(time) of indexing"
-            + (later >= 30 ? ", and \(roughDuration(later)) more for long files" : "")
+        return L("Adds %@ of indexing", time)
+            + (later >= 30 ? L(", and %@ more for long files", roughDuration(later)) : "")
     }
 }
 
@@ -160,8 +161,9 @@ private struct AddFoldersView: View {
 struct CodeFolderNote: View {
     var body: some View {
         Label {
-            Text("Code search reads source files, notebooks and a repo's own docs. It skips what git ignores, vendored "
+            Text(L("Code search reads source files, notebooks and a repo's own docs. It skips what git ignores, vendored "
                  + "and generated code, data files, and anything that looks like a key or a password.")
+            )
                 .fixedSize(horizontal: false, vertical: true)
         } icon: {
             Image(systemName: "info.circle")

@@ -78,8 +78,9 @@ nonisolated struct KeyCombo: Equatable, Sendable {
             caps.append(symbol)
             parts.append(word)
         }
-        self.caps = caps + [name.display]
-        display = caps.joined() + name.display
+        let keyDisplay = name.spec == "space" ? L("Space") : name.display
+        self.caps = caps + [keyDisplay]
+        display = caps.joined() + keyDisplay
         spec = (parts + [name.spec]).joined(separator: "+")
     }
 
@@ -105,13 +106,13 @@ nonisolated struct KeyCombo: Equatable, Sendable {
         }
         guard taken else { return nil }
         switch (Int(keyCode), Int(carbonModifiers)) {
-        case (kVK_Space, cmdKey): return "Spotlight uses \(display)"
-        case (kVK_Space, cmdKey | optionKey): return "Finder's search window uses \(display)"
-        case (kVK_Space, controlKey), (kVK_Space, controlKey | optionKey): return "Switching input sources uses \(display)"
-        case (kVK_Space, controlKey | cmdKey): return "The emoji picker uses \(display)"
+        case (kVK_Space, cmdKey): return L("Spotlight uses %@", display)
+        case (kVK_Space, cmdKey | optionKey): return L("Finder's search window uses %@", display)
+        case (kVK_Space, controlKey), (kVK_Space, controlKey | optionKey): return L("Switching input sources uses %@", display)
+        case (kVK_Space, controlKey | cmdKey): return L("The emoji picker uses %@", display)
         case (kVK_ANSI_3, cmdKey | shiftKey), (kVK_ANSI_4, cmdKey | shiftKey), (kVK_ANSI_5, cmdKey | shiftKey):
-            return "Screenshots use \(display)"
-        default: return "macOS uses \(display) for one of its shortcuts"
+            return L("Screenshots use %@", display)
+        default: return L("macOS uses %@ for one of its shortcuts", display)
         }
     }
 }
@@ -124,10 +125,10 @@ extension KeyCombo {
         if carbonModifiers & UInt32(shiftKey) != 0 { flags.insert(.shift) }
         if carbonModifiers & UInt32(optionKey) != 0 { flags.insert(.option) }
         if carbonModifiers & UInt32(controlKey) != 0 { flags.insert(.control) }
-        let name = display.trimmingCharacters(in: CharacterSet(charactersIn: "⌃⌥⇧⌘"))
-        switch name {
-        case "Space": return (" ", flags)
-        case _ where name.count == 1: return (name.lowercased(), flags)
+        let key = spec.split(separator: "+").last.map(String.init) ?? ""
+        switch key {
+        case "space": return (" ", flags)
+        case _ where key.count == 1: return (key.lowercased(), flags)
         default: return nil
         }
     }

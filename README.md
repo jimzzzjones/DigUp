@@ -47,6 +47,7 @@ day. The update check sends nothing about your files, and you can turn it off. N
 3. Press **⇧⌘Space** in any app and describe what you're looking for.
 
 DigUp needs an Apple Silicon Mac with macOS 14 or later (it's tested on macOS 26), and it keeps itself up to date.
+The app interface follows the macOS language setting and is available in English and Simplified Chinese.
 
 ## Using it
 
@@ -150,11 +151,12 @@ The app itself is about 20 MB.
 **Will it slow my Mac down?** Only the first pass is heavy. After that it reads new files only. The model runs in a
 separate process that quits when it's done, and the search side only loads while you're searching.
 
-**Which languages?** The model knows more than 100, and DigUp searches in all of them, across languages too. The evals
-cover only English, Bengali and Arabic because those are the languages of the files DigUp was tested on, and Google
-notes that the model isn't equally strong in every language. Two limits apply to exact words, not to meaning: inside
-screenshots they're read by Apple's text recognition, which knows about 25 languages, and languages written without
-spaces, like Chinese, Japanese and Thai, aren't split into words.
+**Which languages?** The interface is available in English and Simplified Chinese and follows the macOS language.
+The model knows more than 100 languages, and DigUp searches across them, but the evals cover only English, Bengali
+and Arabic; a translated interface does not establish Chinese search accuracy. Google notes that the model isn't
+equally strong in every language. Two limits apply to exact words, not to meaning: inside screenshots they're read by
+Apple's text recognition, which knows about 25 languages, and languages written without spaces, like Chinese,
+Japanese and Thai, aren't split into words.
 
 **How do I remove it?** Quit it, then delete DigUp.app and `~/Library/Application Support/DigUp`, which holds the
 model and the indexes. Its settings are in `~/Library/Preferences/com.abdurrahim.DigUp.plist`. With Homebrew,

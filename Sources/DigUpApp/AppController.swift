@@ -184,14 +184,14 @@ final class AppController {
     }
 
     /// Asks for folders with the standard open panel (as a sheet when there's a window).
-    func pickFolders(for window: NSWindow?, prompt: String = "Add", then done: @escaping ([URL]) -> Void) {
+    func pickFolders(for window: NSWindow?, prompt: String = L("Add"), then done: @escaping ([URL]) -> Void) {
         let panel = NSOpenPanel()
         panel.canChooseDirectories = true
         panel.canChooseFiles = false
         panel.allowsMultipleSelection = true
         panel.canCreateDirectories = false
         panel.prompt = prompt
-        panel.message = "Choose folders for DigUp to search."
+        panel.message = L("Choose folders for DigUp to search.")
         let finish = { (response: NSApplication.ModalResponse) in
             done(response == .OK ? panel.urls.map { AppSettings.folderURL($0.path) } : [])
         }
@@ -216,7 +216,7 @@ final class AppController {
     /// Nil when `combo` is now the hotkey, else why it can't be.
     func setHotkey(_ combo: KeyCombo) -> String? {
         if let conflict = combo.systemConflict { return conflict }
-        guard hotkeys.register(combo) else { return "Another app is using \(combo.display)" }
+        guard hotkeys.register(combo) else { return L("Another app is using %@", combo.display) }
         AppSettings.save(hotkey: combo.spec)
         model.settings.hotkey = combo.spec
         model.hotkey = combo

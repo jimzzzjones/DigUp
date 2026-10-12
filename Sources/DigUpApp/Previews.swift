@@ -145,7 +145,7 @@ struct PreviewPane: View {
                 .buttonStyle(.plain)
                 .font(.system(size: 11))
                 .foregroundStyle(.secondary)
-                .help("Show in Finder")
+                .help(L("Show in Finder"))
                 Text(row.details)
                     .font(.system(size: 11))
                     .foregroundStyle(.secondary)
@@ -288,7 +288,7 @@ struct AudioMoment: View {
                         .foregroundStyle(Color.accentColor)
                 }
                 .buttonStyle(.plain)
-                .help(row.loc.map { "Play from \(ResultRow.clock($0))" } ?? "Play")
+                .help(row.loc.map { L("Play from %@", ResultRow.clock($0)) } ?? L("Play"))
             }
             if let loc = row.loc {
                 VStack(spacing: 5) {
@@ -297,8 +297,9 @@ struct AudioMoment: View {
                                   playhead: playback.isCurrent(row) ? playback.time : nil)
                             .frame(maxWidth: 260)
                     }
-                    Text(playback.isCurrent(row) ? "\(ResultRow.clock(playback.time)) – playing from "
-                         + ResultRow.clock(loc) : span(from: loc))
+                    Text(playback.isCurrent(row)
+                         ? L("%@ – playing from %@", ResultRow.clock(playback.time), ResultRow.clock(loc))
+                         : span(from: loc))
                         .font(.system(size: 11).monospacedDigit())
                         .foregroundStyle(.secondary)
                 }
@@ -311,7 +312,7 @@ struct AudioMoment: View {
     /// "0:25 – 0:55 of 3:12"
     private func span(from start: Double) -> String {
         let end = row.locEnd ?? start + 30
-        let total = row.duration.map { " of " + ResultRow.clock($0) } ?? ""
+        let total = row.duration.map { L(" of %@", ResultRow.clock($0)) } ?? ""
         return ResultRow.clock(start) + " – " + ResultRow.clock(end) + total
     }
 }
@@ -356,8 +357,8 @@ struct PlayButton: View {
                 .overlay(Circle().strokeBorder(.white.opacity(0.7), lineWidth: 1.5))
         }
         .buttonStyle(.plain)
-        .help(row.moment.map { "Play from \(ResultRow.clock($0))" } ?? "Play")
-        .accessibilityLabel(row.moment.map { "Play from \(ResultRow.clock($0))" } ?? "Play")
+        .help(row.moment.map { L("Play from %@", ResultRow.clock($0)) } ?? L("Play"))
+        .accessibilityLabel(row.moment.map { L("Play from %@", ResultRow.clock($0)) } ?? L("Play"))
     }
 }
 
@@ -394,7 +395,7 @@ struct Passage: View {
         guard let part = row.loc.map(Int.init), let parts = row.info["chunks"].flatMap(Int.init), parts > 1 else {
             return nil
         }
-        return "Part \(part) of \(parts)"
+        return L("Part %@ of %@", String(part), String(parts))
     }
 
     /// Up to ~900 characters from just before the first marked word, the words marked like a search in Preview.

@@ -35,7 +35,7 @@ final class OnboardingController: NSObject, NSWindowDelegate {
         window.titlebarAppearsTransparent = true
         window.titleVisibility = .hidden
         window.isMovableByWindowBackground = true
-        window.title = "Welcome to DigUp"
+        window.title = L("Welcome to DigUp")
         window.isReleasedWhenClosed = false
         window.delegate = self
         state.close = { [weak self] in self?.close() }
@@ -190,7 +190,7 @@ final class OnboardingState {
     }
 
     func skipFolders(from window: NSWindow?) {
-        app.pickFolders(for: window, prompt: "Skip") { [weak self] picked in
+        app.pickFolders(for: window, prompt: L("Skip")) { [weak self] picked in
             guard !picked.isEmpty else { return }
             self?.folders.skip(picked)
         }
@@ -273,26 +273,26 @@ struct OnboardingView: View {
 
     private var continueTitle: String {
         switch state.step {
-        case .welcome: "Get Started"
-        case .folders: "Continue"
-        case .code: "Continue"
-        case .shortcut: "Continue"
-        case .ready: "Done"
+        case .welcome: L("Get Started")
+        case .folders: L("Continue")
+        case .code: L("Continue")
+        case .shortcut: L("Continue")
+        case .ready: L("Done")
         }
     }
 
     private var codeSummary: String {
-        guard !state.codeFolders.roots.isEmpty else { return "Check the folders with your code" }
-        guard state.codeFolders.estimatesDone else { return "Looking at your code…" }
+        guard !state.codeFolders.roots.isEmpty else { return L("Check the folders with your code") }
+        guard state.codeFolders.estimatesDone else { return L("Looking at your code…") }
         let seconds = state.codeFolders.totalSeconds
-        return (seconds < 1 ? "Under a second" : "About \(roughDuration(seconds))")
-            + ", \(roughBytes(state.codeFolders.totalBytes))"
+        return L("%@, %@", seconds < 1 ? L("Under a second") : L("About %@", roughDuration(seconds)),
+                 roughBytes(state.codeFolders.totalBytes))
     }
 
     private var foldersSummary: String {
-        guard !state.folders.roots.isEmpty else { return "Choose at least one folder" }
-        guard state.folders.estimatesDone else { return "Looking at your folders…" }
-        return "First pass: about \(roughDuration(state.folders.totalSeconds))"
+        guard !state.folders.roots.isEmpty else { return L("Choose at least one folder") }
+        guard state.folders.estimatesDone else { return L("Looking at your folders…") }
+        return L("First pass: about %@", roughDuration(state.folders.totalSeconds))
     }
 }
 
@@ -309,7 +309,7 @@ private struct StepDots: View {
             }
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Step \(current + 1) of \(count)")
+        .accessibilityLabel(L("Step %@ of %@", String(current + 1), String(count)))
     }
 }
 
@@ -335,7 +335,7 @@ struct DownloadStatus: View {
                 ProgressView(value: download.fraction)
                     .progressViewStyle(.circular)
                     .controlSize(.small)
-                Text("Downloading the model · \(download.progressText)")
+                Text(L("Downloading the model · %@", download.progressText))
                     .lineLimit(1)
             }
         }
@@ -372,8 +372,8 @@ private struct WelcomeStep: View {
                     .font(.system(size: 18))
                     .foregroundStyle(.secondary)
                     .frame(width: 30)
-                Text("Everything is indexed and searched on this Mac. DigUp downloads its AI model (865 MB) once; "
-                     + "after that it works offline, and nothing you index ever leaves your Mac.")
+                Text(L("Everything is indexed and searched on this Mac. DigUp downloads its AI model (865 MB) once; "
+                     + "after that it works offline, and nothing you index ever leaves your Mac."))
                     .font(.system(size: 12))
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -399,8 +399,8 @@ private struct Feature: View {
                 .frame(width: 34, height: 34)
                 .background(RoundedRectangle(cornerRadius: 9, style: .continuous).fill(Brand.tile))
             VStack(alignment: .leading, spacing: 2) {
-                Text(title).font(.system(size: 14, weight: .semibold))
-                Text(example).font(.system(size: 12)).foregroundStyle(.secondary)
+                Text(L(title)).font(.system(size: 14, weight: .semibold))
+                Text(L(example)).font(.system(size: 12)).foregroundStyle(.secondary)
             }
         }
         .frame(maxWidth: 470, alignment: .leading)
@@ -413,8 +413,8 @@ struct StepTitle: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text(title).font(.system(size: 24, weight: .bold))
-            Text(subtitle)
+            Text(L(title)).font(.system(size: 24, weight: .bold))
+            Text(L(subtitle))
                 .font(.system(size: 13))
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -442,8 +442,8 @@ private struct FoldersStep: View {
             .scrollBounceBehavior(.basedOnSize)
             HStack(alignment: .top, spacing: 8) {
                 Image(systemName: "info.circle").foregroundStyle(.secondary)
-                Text("macOS will ask before DigUp can read folders like Desktop, Documents and Downloads. "
-                     + "DigUp only reads files: it never changes, moves or uploads them.")
+                Text(L("macOS will ask before DigUp can read folders like Desktop, Documents and Downloads. "
+                     + "DigUp only reads files: it never changes, moves or uploads them."))
                     .fixedSize(horizontal: false, vertical: true)
             }
             .font(.system(size: 11))
@@ -474,7 +474,7 @@ private struct SkipChoices: View {
                             Image(systemName: "minus.circle.fill").foregroundStyle(.secondary)
                         }
                         .buttonStyle(.plain)
-                        .help("Search this folder again")
+                        .help(L("Search this folder again"))
                     }
                     .font(.system(size: 12))
                 }
@@ -570,7 +570,7 @@ private struct ShortcutStep: View {
                     Label("That's it. It works from any app.", systemImage: "checkmark.circle.fill")
                         .foregroundStyle(.green)
                 } else if let hotkey = state.model.hotkey {
-                    Text("Try it now: press \(hotkey.display).")
+                    Text(L("Try it now: press %@.", hotkey.display))
                         .foregroundStyle(.secondary)
                 }
             }
@@ -604,7 +604,7 @@ private struct KeyTip: View {
         HStack(spacing: 10) {
             Keycaps(caps: caps, size: 11)
                 .frame(width: 66, alignment: .leading)
-            Text(text).font(.system(size: 12))
+            Text(L(text)).font(.system(size: 12))
         }
     }
 }
@@ -652,15 +652,16 @@ private struct ReadyStep: View {
 
     private var progressNote: String {
         let seconds = state.folders.totalSeconds, later = state.folders.totalLaterSeconds
-        let time = seconds > 0 ? " (about \(roughDuration(seconds)) on this Mac)" : ""
-        let rest = later >= 30 ? " Long PDFs and documents get their first pages in that time, and the rest "
-            + "afterwards (about \(roughDuration(later)) more)." : ""
+        let time = seconds > 0 ? L(" (about %@ on this Mac)", roughDuration(seconds)) : ""
+        let rest = later >= 30
+            ? L(" Long PDFs and documents get their first pages in that time, and the rest afterwards (about %@ more).",
+                roughDuration(later)) : ""
         if state.download.isReady {
-            return "DigUp is reading your folders\(time), newest files first. You can search right away; "
-                + "results fill in as it goes." + rest
+            return L("DigUp is reading your folders%@, newest files first. You can search right away; results fill in as it goes.",
+                     time) + rest
         }
-        return "DigUp starts reading your folders\(time) once the model has downloaded "
-            + "(\(state.download.progressText)). Until then, search finds files by name." + rest
+        return L("DigUp starts reading your folders%@ once the model has downloaded (%@). Until then, search finds files by name.",
+                 time, state.download.progressText) + rest
     }
 }
 
@@ -673,8 +674,8 @@ struct SwitchRow: View {
     var body: some View {
         HStack(alignment: .center, spacing: 16) {
             VStack(alignment: .leading, spacing: 2) {
-                Text(title).font(.system(size: 13, weight: .medium))
-                Text(detail)
+                Text(L(title)).font(.system(size: 13, weight: .medium))
+                Text(L(detail))
                     .font(.system(size: 11))
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
